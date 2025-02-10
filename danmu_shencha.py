@@ -45,7 +45,7 @@ class DanmakuBuffer:
                 model="deepseek-v3",
                 messages=[
                     {"role": "system",
-                     "content": "你是一个严格的内容审核助手，请帮我检查以下直播弹幕是否包含明显违规内容（包括但不限于攻击性、侮辱性、违法、色情等），如果发现违规内容，请返回违规用户的昵称,uid和具体违规内容,类似：点关注，看动态置顶，今天抽礼物这种不属于攻击性言论属于正常宣传。"},
+                     "content": "你是一个严格的内容审核助手，请帮我检查以下直播弹幕是否包含明显违规内容（包括攻击性、侮辱性、违法、色情等），如果发现违规内容，请返回违规用户的昵称,uid和具体违规内容,类似：点关注，看动态置顶，今天抽礼物这种不属于攻击性言论属于正常宣传。"},
                     {"role": "user", "content": combined_text}
                 ],
                 stream=False
@@ -129,7 +129,9 @@ def parse_danmaku(data, danmaku_buffer):
         for msg in data['admin']:
             print(f"UID: {msg['uid']}")
             print(f"用户主页url链接: https://space.bilibili.com/{msg['uid']}")
-            print(f"昵称: {msg['nickname']}")
+            name=msg['nickname']
+            name = name.encode('gbk', errors='ignore').decode('gbk')
+            print(f"昵称: {name}")
             content = msg['text']
             content = content.encode('gbk', errors='ignore').decode('gbk')
             print(f"弹幕内容: {content}")
@@ -140,10 +142,15 @@ def parse_danmaku(data, danmaku_buffer):
     if 'room' in data:
         for msg in data['room']:
             print(f"UID: {msg['uid']}")
-            print(f"昵称: {msg['nickname']}")
-            print(f"弹幕内容: {msg['text']}")
+            name=msg['nickname']
+            name = name.encode('gbk', errors='ignore').decode('gbk')
+            print(f"昵称: {name}")
+            content=msg['text']
+            content=content.encode('gbk', errors='ignore').decode('gbk')
+            print(f"弹幕内容: {content}")
             print("-" * 50)
             danmaku_buffer.add_danmaku(msg)
+
 
 
 def get_bilibili_danmaku(room_id, danmaku_buffer):
